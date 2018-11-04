@@ -39,17 +39,6 @@ public class Product {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + "\'" +
-                ", price=" + price +
-                ", addDate=" + addDate +
-                ", picturePath=" + picturePath +
-                '}';
-    }
-
     public int getId() {
         return id;
     }
@@ -90,4 +79,14 @@ public class Product {
         this.picturePath = picturePath;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", addDate=" + addDate +
+                ", picturePath='" + picturePath + '\'' +
+                '}';
+    }
 }
