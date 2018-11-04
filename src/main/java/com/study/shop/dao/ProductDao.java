@@ -18,5 +18,5 @@ public interface ProductDao {
 
     void delete(int id);
 
-    int add(String name, double price, String picturePath);
+    void add(String name, double price, String picturePath);
 }

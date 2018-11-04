@@ -44,4 +44,8 @@
         <property name="user" value="#{@dbUrl.getUserInfo().split(':')[0]}"/>
         <property name="password" value="#{@dbUrl.getUserInfo().split(':')[1]}"/>
     </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg name="dataSource" ref="dataSource"/>
+    </bean>
 </beans>

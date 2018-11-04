@@ -4,6 +4,8 @@ import com.study.shop.dao.UserDao;
 import com.study.shop.dao.jdbc.mapper.UserRowMapper;
 import com.study.shop.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -15,10 +17,9 @@ import java.sql.SQLException;
 @Repository
 public class JdbcUserDao implements UserDao {
     private static final String GET_USER_BY_NAME_AND_PASSWORD_SQL = "SELECT username, password, salt, user_role FROM app_user WHERE username = UPPER(?) AND password = MD5(CONCAT(?,salt))";
-    private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
 
     @Autowired
-    private DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
 
     public JdbcUserDao() {
 
@@ -26,26 +27,12 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User getUser(String userName, String password) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_USER_BY_NAME_AND_PASSWORD_SQL);) {
+        User user = jdbcTemplate.queryForObject(GET_USER_BY_NAME_AND_PASSWORD_SQL, new Object[] { userName, password }, new UserRowMapper());
 
-            preparedStatement.setString(1, userName);
-            preparedStatement.setString(2, password);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery();) {
-                if (resultSet.next()) {
-                    User user = USER_ROW_MAPPER.mapRow(resultSet);
-                    return user;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
+        return user;
     }
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 }

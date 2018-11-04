@@ -49,7 +49,7 @@ public class ProductController {
 
     @RequestMapping(path = "/product/add", method = RequestMethod.POST)
     public String addProduct(@RequestParam String name, @RequestParam double price, @RequestParam String picturePath) {
-        int id = productService.add(name, price, picturePath);
+        productService.add(name, price, picturePath);
 
         return "redirect:/products";
     }

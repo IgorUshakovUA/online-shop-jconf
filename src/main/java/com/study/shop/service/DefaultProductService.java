@@ -47,8 +47,8 @@ public class DefaultProductService implements ProductService {
     }
 
     @Override
-    public int add(String name, double price, String picturePath) {
-        return productDao.add(name, price, picturePath);
+    public void add(String name, double price, String picturePath) {
+        productDao.add(name, price, picturePath);
     }
 
     public void setProductDao(ProductDao productDao) {
