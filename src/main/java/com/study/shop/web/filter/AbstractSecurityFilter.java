@@ -6,8 +6,6 @@ import com.study.shop.security.entity.Session;
 import com.study.shop.util.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
@@ -15,11 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Configurable
 public class AbstractSecurityFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(AbstractSecurityFilter.class);
 
-    @Autowired
     private SecurityService securityService;
 
     @Override

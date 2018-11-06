@@ -10,5 +10,24 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
-    <mvc:annotation-driven/>
- </beans>
+
+    <context:component-scan base-package="com.study.shop.web.controller"/>
+    <context:component-scan base-package="com.study.shop.web.restcontroller"/>
+
+    <bean id="springTemplateResolver"
+          class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/classes/"/>
+        <property name="suffix" value=".html"/>
+        <property name="templateMode" value="HTML5"/>
+    </bean>
+
+    <bean id="springTemplateEngine"
+          class="org.thymeleaf.spring5.SpringTemplateEngine">
+        <property name="templateResolver" ref="springTemplateResolver"/>
+    </bean>
+
+    <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="springTemplateEngine"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+</beans>
