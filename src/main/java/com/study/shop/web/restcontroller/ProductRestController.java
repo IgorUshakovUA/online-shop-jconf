@@ -3,6 +3,7 @@ package com.study.shop.web.restcontroller;
 import com.study.shop.entity.Product;
 import com.study.shop.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -5,6 +5,7 @@ import com.study.shop.entity.Cart;
 import com.study.shop.entity.CartProduct;
 import com.study.shop.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

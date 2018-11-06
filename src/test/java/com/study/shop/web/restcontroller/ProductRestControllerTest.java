@@ -1,150 +1,130 @@
 package com.study.shop.web.restcontroller;
 
-import com.study.shop.entity.Cart;
-import com.study.shop.entity.CartProduct;
 import com.study.shop.entity.Product;
 import com.study.shop.service.ProductService;
+import com.study.shop.web.config.TestContext;
+import com.study.shop.web.config.WebAppContext;
+import com.study.shop.web.util.TestUtil;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestContext.class, WebAppContext.class})
+@WebAppConfiguration
 public class ProductRestControllerTest {
-    @Test
-    public void testGetAll() {
-        ProductRestController productRestController = new ProductRestController();
-        ProductService productService = new TestProductService();
-        productRestController.setProductService(productService);
 
-        List<Product> actualProducts = productRestController.getAll();
+    private MockMvc mockMvc;
 
-        String expectedString1 = productService.getById(1).get(0).toString();
-        String expectedString2 = productService.getById(2).get(0).toString();
-        assertEquals(2, actualProducts.size());
-        assertEquals(expectedString1, actualProducts.get(0).toString());
-        assertEquals(expectedString2, actualProducts.get(1).toString());
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+
+    @Autowired
+    private ProductService productServiceMock;
+
+    @Before
+    public void setUp() {
+        Mockito.reset(productServiceMock);
+
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    @Test
-    public void testGetById() {
-        ProductRestController productRestController = new ProductRestController();
-        ProductService productService = new TestProductService();
-        productRestController.setProductService(productService);
-
-        Product actualProduct = productRestController.getById(1);
-
-        String expectedString1 = productService.getById(1).get(0).toString();
-        assertEquals(expectedString1, actualProduct.toString());
-    }
 
     @Test
-    public void testDelete() {
-        ProductRestController productRestController = new ProductRestController();
-        ProductService productService = new TestProductService();
-        productRestController.setProductService(productService);
-        List<Product> actualProducts = productRestController.getAll();
-        String expectedString2 = productService.getById(2).get(0).toString();
+    public void testGetAll() throws Exception {
+        Product first = new Product(1, "name1", 100.99, null, "the link 1");
+        Product second = new Product(2, "name2", 200.99, null, "the link 2");
 
-        productRestController.delete(1);
+        when(productServiceMock.getAll()).thenReturn(Arrays.asList(first, second));
 
-        assertEquals(1, actualProducts.size());
-        assertEquals(expectedString2, actualProducts.get(0).toString());
-    }
+        mockMvc.perform(get("/api/v1/products"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", equalTo(1)))
+                .andExpect(jsonPath("$[0].name", equalTo("name1")))
+                .andExpect(jsonPath("$[0].price", equalTo(100.99)))
+                .andExpect(jsonPath("$[0].picturePath", equalTo("the link 1")))
+                .andExpect(jsonPath("$[1].id", equalTo(2)))
+                .andExpect(jsonPath("$[1].name", equalTo("name2")))
+                .andExpect(jsonPath("$[1].price", equalTo(200.99)))
+                .andExpect(jsonPath("$[1].picturePath", equalTo("the link 2")));
 
-    @Test
-    public void testEdit() {
-        ProductRestController productRestController = new ProductRestController();
-        ProductService productService = new TestProductService();
-        productRestController.setProductService(productService);
-        Product product = new Product(999, "test_name_new", 999.09, LocalDateTime.now(), "the_link_new");
-        List<Product> actualProducts = productRestController.getAll();
-
-        productRestController.edit(2, product);
-
-        product.setId(2);
-        assertEquals(2, actualProducts.size());
-        assertEquals(product.toString(), actualProducts.get(1).toString());
+        verify(productServiceMock, times(1)).getAll();
+        verifyNoMoreInteractions(productServiceMock);
     }
 
     @Test
-    public void testAdd() {
-        ProductRestController productRestController = new ProductRestController();
-        ProductService productService = new TestProductService();
-        productRestController.setProductService(productService);
-        Product product = new Product(1, "test_name_new", 999.09, LocalDateTime.now(), "the_link_new");
+    public void testGetById() throws Exception {
+        Product second = new Product(2, "name2", 200.99, null, "the link 2");
 
-        productRestController.add(product);
+        when(productServiceMock.getById(2)).thenReturn(Arrays.asList(second));
 
-        List<Product> actualProductList = productRestController.getAll();
-        assertEquals(3, actualProductList.size());
-        Product actualProduct = actualProductList.get(2);
-        assertEquals(product.getName(), actualProduct.getName());
-        assertEquals(product.getPrice(),actualProduct.getPrice(),1e-10);
-        assertEquals(product.getPicturePath(),actualProduct.getPicturePath());
+        mockMvc.perform(get("/api/v1/product/2"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.id", equalTo(2)))
+                .andExpect(jsonPath("$.name", equalTo("name2")))
+                .andExpect(jsonPath("$.price", equalTo(200.99)))
+                .andExpect(jsonPath("$.picturePath", equalTo("the link 2")));
+
+        verify(productServiceMock, times(1)).getById(2);
+        verifyNoMoreInteractions(productServiceMock);
     }
 
-}
+    @Test
+    public void testDelete() throws Exception {
+        mockMvc.perform(delete("/api/v1/product/1"))
+                .andExpect(status().isOk());
 
-class TestProductService implements ProductService {
-    private List<Product> products = new ArrayList<>();
-
-    public TestProductService() {
-        Product product = new Product(1, "test_product_1", 99.99, LocalDateTime.now(), "the_link_1");
-        products.add(product);
-        product = new Product(2, "test_product_2", 99.99, LocalDateTime.now(), "the_link_2");
-        products.add(product);
+        verify(productServiceMock, times(1)).delete(1);
+        verifyNoMoreInteractions(productServiceMock);
     }
 
-    @Override
-    public List<Product> getAll() {
-        return products;
+    @Test
+    public void testEdit() throws Exception {
+        Product updated = new Product(1, "new_name1", 99.99, null, "the new link 1");
+
+        mockMvc.perform(put("/api/v1/product/1", updated)
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(updated))
+        )
+                .andExpect(status().isOk());
+
+        verify(productServiceMock, times(1)).update(1, "new_name1", 99.99, null, "the new link 1");
+        verifyNoMoreInteractions(productServiceMock);
     }
 
-    @Override
-    public List<Product> getById(int id) {
-        List<Product> result = new ArrayList<>();
-        for (Product product : products) {
-            if (product.getId() == id) {
-                result.add(product);
-            }
-        }
-        return result;
+    @Test
+    public void testAdd() throws Exception {
+        LocalDateTime this_moment = LocalDateTime.now();
+        Product new_product = new Product(1, "new_name", 9.99, null, "the new link");
+
+        mockMvc.perform(post("/api/v1/product")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(new_product))
+        )
+                .andExpect(status().isOk());
+
+        verify(productServiceMock, times(1)).add("new_name", 9.99, "the new link");
+        verifyNoMoreInteractions(productServiceMock);
     }
 
-    @Override
-    public List<CartProduct> getByCart(Cart cart) {
-        return null;
-    }
-
-    @Override
-    public void update(int id, String name, double price, LocalDateTime addTime, String picturePath) {
-        for (Product product : products) {
-            if (product.getId() == id) {
-                product.setName(name);
-                product.setPrice(price);
-                product.setAddDate(addTime);
-                product.setPicturePath(picturePath);
-            }
-        }
-    }
-
-    @Override
-    public void delete(int id) {
-        Iterator<Product> iterator = products.iterator();
-        while (iterator.hasNext()) {
-            Product current = iterator.next();
-            if (current.getId() == id) {
-                iterator.remove();
-            }
-        }
-    }
-
-    @Override
-    public void add(String name, double price, String picturePath) {
-        products.add(new Product(999, name, price, LocalDateTime.now(), picturePath));
-    }
 }
