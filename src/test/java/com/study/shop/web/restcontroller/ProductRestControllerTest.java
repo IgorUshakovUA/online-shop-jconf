@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
@@ -56,7 +55,7 @@ public class ProductRestControllerTest {
 
         mockMvc.perform(get("/api/v1/products"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType(TestUtil.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", equalTo(1)))
                 .andExpect(jsonPath("$[0].name", equalTo("name1")))
@@ -79,7 +78,7 @@ public class ProductRestControllerTest {
 
         mockMvc.perform(get("/api/v1/product/2"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType(TestUtil.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", equalTo(2)))
                 .andExpect(jsonPath("$.name", equalTo("name2")))
                 .andExpect(jsonPath("$.price", equalTo(200.99)))
@@ -114,7 +113,6 @@ public class ProductRestControllerTest {
 
     @Test
     public void testAdd() throws Exception {
-        LocalDateTime this_moment = LocalDateTime.now();
         Product new_product = new Product(1, "new_name", 9.99, null, "the new link");
 
         mockMvc.perform(post("/api/v1/product")
