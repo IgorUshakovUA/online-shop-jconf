@@ -38,8 +38,8 @@ public class DefaultProductService implements ProductService {
     }
 
     @Override
-    public void update(int id, String name, double price, LocalDateTime addTime, String picturePath) {
-        productDao.update(id, name, price, addTime, picturePath);
+    public void update(Product product) {
+        productDao.update(product.getId(), product.getName(), product.getPrice(), product.getAddDate(), product.getPicturePath());
     }
 
     @Override
@@ -48,8 +48,8 @@ public class DefaultProductService implements ProductService {
     }
 
     @Override
-    public void add(String name, double price, String picturePath) {
-        productDao.add(name, price, picturePath);
+    public void add(Product product) {
+        productDao.add(product.getName(), product.getPrice(), product.getPicturePath());
     }
 
     public void setProductDao(ProductDao productDao) {

@@ -25,12 +25,12 @@ public class ProductRestController {
 
     @RequestMapping(path="/api/v1/product/{id}", method = RequestMethod.PUT)
     public void edit(@PathVariable int id, @RequestBody Product product) {
-        productService.update(id, product.getName(), product.getPrice(), product.getAddDate(), product.getPicturePath());
+        productService.update(product);
     }
 
     @RequestMapping(path="/api/v1/product", method = RequestMethod.POST)
     public void add(@RequestBody Product product) {
-        productService.add(product.getName(), product.getPrice(), product.getPicturePath());
+        productService.add(product);
     }
 
     @RequestMapping(path="/api/v1/products", method = RequestMethod.GET)

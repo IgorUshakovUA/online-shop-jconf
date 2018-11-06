@@ -4,6 +4,7 @@ import com.study.shop.entity.Product;
 import com.study.shop.security.SecurityService;
 import com.study.shop.security.entity.Session;
 import com.study.shop.service.ProductService;
+import com.study.shop.service.util.CartUtil;
 import com.study.shop.util.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +34,11 @@ public class ProductController {
         List<Product> products = productService.getAll();
 
         if (session != null) {
-            model.addAttribute("count", session.getCart().getItemCount());
+            model.addAttribute("count", CartUtil.getItemCount(session.getCart()));
         } else {
-            model.addAttribute("count",0);
+            model.addAttribute("count", 0);
         }
-        model.addAttribute("products",products);
+        model.addAttribute("products", products);
 
         return "products";
     }
@@ -49,12 +50,18 @@ public class ProductController {
 
     @RequestMapping(path = "/product/add", method = RequestMethod.POST)
     public String addProduct(@RequestParam String name, @RequestParam double price, @RequestParam String picturePath) {
-        productService.add(name, price, picturePath);
+        Product product = new Product();
+        product.setId(0);
+        product.setName(name);
+        product.setPrice(price);
+        product.setPicturePath(picturePath);
+
+        productService.add(product);
 
         return "redirect:/products";
     }
 
-    @RequestMapping(path="/product/edit/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/product/edit/{id}", method = RequestMethod.GET)
     public String editProductPage(@PathVariable int id, Model model) {
         try {
             List<Product> products = productService.getById(id);
@@ -62,7 +69,7 @@ public class ProductController {
             Product product = products.get(0);
             model.addAttribute("id", product.getId());
             model.addAttribute("name", product.getName());
-            model.addAttribute("price", String.format("%.2f",product.getPrice()).replace(",","."));
+            model.addAttribute("price", String.format("%.2f", product.getPrice()).replace(",", "."));
             model.addAttribute("picturePath", product.getPicturePath());
 
             return "editProduct";
@@ -77,12 +84,19 @@ public class ProductController {
     public String editProduct(@RequestParam int id, @RequestParam String name, @RequestParam double price, @RequestParam String picturePath) {
         LocalDateTime addDate = LocalDateTime.now();
 
-        productService.update(id, name, price, addDate, picturePath);
+        Product product = new Product();
+        product.setId(0);
+        product.setName(name);
+        product.setPrice(price);
+        product.setAddDate(addDate);
+        product.setPicturePath(picturePath);
+
+        productService.update(product);
 
         return "redirect:/products";
     }
 
-    @RequestMapping(path="/product/delete/{id}", method=RequestMethod.GET)
+    @RequestMapping(path = "/product/delete/{id}", method = RequestMethod.GET)
     public String deleteProduct(@PathVariable int id) {
         productService.delete(id);
 

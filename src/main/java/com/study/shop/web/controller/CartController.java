@@ -4,6 +4,7 @@ import com.study.shop.entity.CartProduct;
 import com.study.shop.security.SecurityService;
 import com.study.shop.security.entity.Session;
 import com.study.shop.service.ProductService;
+import com.study.shop.service.util.CartUtil;
 import com.study.shop.util.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +27,15 @@ public class CartController {
     @Autowired
     private SecurityService securityService;
 
-    @RequestMapping(path="/cart", method = RequestMethod.GET)
+    @RequestMapping(path = "/cart", method = RequestMethod.GET)
     public String getCart(HttpServletRequest req, Model model) {
         String userToken = CookieUtil.getCookieValue("user-session", req);
         Session session = securityService.getSession(userToken);
 
         List<CartProduct> products = productService.getByCart(session.getCart());
         for (CartProduct cartProduct : products) {
-            cartProduct.setCount(session.getCart().getCountById(cartProduct.getProduct().getId()));
+            int id = cartProduct.getProduct().getId();
+            cartProduct.setCount(CartUtil.getCountById(session.getCart(), id));
         }
 
         model.addAttribute("products", products);
@@ -42,42 +44,42 @@ public class CartController {
     }
 
 
-    @RequestMapping(path="/cart/add/{id}", method=RequestMethod.GET)
+    @RequestMapping(path = "/cart/add/{id}", method = RequestMethod.GET)
     public String addToCart(@PathVariable int id, HttpServletRequest req) {
         String userToken = CookieUtil.getCookieValue("user-session", req);
         Session session = securityService.getSession(userToken);
 
-        session.getCart().addProduct(id,1);
+        CartUtil.addProduct(session.getCart(), id, 1);
 
         return "redirect:/products";
     }
 
-    @RequestMapping(path="/cart/delete/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/cart/delete/{id}", method = RequestMethod.GET)
     public String deleteFromCart(@PathVariable int id, HttpServletRequest req) {
         String userToken = CookieUtil.getCookieValue("user-session", req);
         Session session = securityService.getSession(userToken);
 
-        session.getCart().deleteProduct(id);
+        CartUtil.deleteProduct(session.getCart(), id);
 
         return "redirect:/cart";
     }
 
-    @RequestMapping(path="/cart/plus/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/cart/plus/{id}", method = RequestMethod.GET)
     public String plusOneFromCart(@PathVariable int id, HttpServletRequest req) {
         String userToken = CookieUtil.getCookieValue("user-session", req);
         Session session = securityService.getSession(userToken);
 
-        session.getCart().addProduct(id,1);
+        CartUtil.addProduct(session.getCart(), id, 1);
 
         return "redirect:/cart";
     }
 
-    @RequestMapping(path="/cart/minus/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/cart/minus/{id}", method = RequestMethod.GET)
     public String minusOneFromCart(@PathVariable int id, HttpServletRequest req) {
         String userToken = CookieUtil.getCookieValue("user-session", req);
         Session session = securityService.getSession(userToken);
 
-        session.getCart().decreaseCount(id);
+        CartUtil.decreaseCount(session.getCart(), id);
 
         return "redirect:/cart";
     }

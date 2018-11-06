@@ -27,7 +27,7 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User getUser(String userName, String password) {
-        User user = jdbcTemplate.queryForObject(GET_USER_BY_NAME_AND_PASSWORD_SQL, new Object[] { userName, password }, new UserRowMapper());
+        User user = jdbcTemplate.queryForObject(GET_USER_BY_NAME_AND_PASSWORD_SQL, new UserRowMapper(), userName, password);
 
         return user;
     }

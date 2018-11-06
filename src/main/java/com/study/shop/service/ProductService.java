@@ -14,9 +14,9 @@ public interface ProductService {
 
     List<CartProduct> getByCart(Cart cart);
 
-    void update(int id, String name, double price, LocalDateTime addTime, String picturePath);
+    void update(Product product);
 
     void delete(int id);
 
-    void add(String name, double price, String picturePath);
+    void add(Product product);
 }

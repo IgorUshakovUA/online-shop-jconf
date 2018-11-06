@@ -48,8 +48,16 @@ public class ProductRestControllerTest {
 
     @Test
     public void testGetAll() throws Exception {
-        Product first = new Product(1, "name1", 100.99, null, "the link 1");
-        Product second = new Product(2, "name2", 200.99, null, "the link 2");
+        Product first = new Product();
+        first.setId(1);
+        first.setName("name1");
+        first.setPrice(100.99);
+        first.setPicturePath("the link 1");
+        Product second = new Product();
+        second.setId(2);
+        second.setName("name2");
+        second.setPrice(200.99);
+        second.setPicturePath("the link 2");
 
         when(productServiceMock.getAll()).thenReturn(Arrays.asList(first, second));
 
@@ -72,7 +80,11 @@ public class ProductRestControllerTest {
 
     @Test
     public void testGetById() throws Exception {
-        Product second = new Product(2, "name2", 200.99, null, "the link 2");
+        Product second = new Product();
+        second.setId(2);
+        second.setName("name2");
+        second.setPrice(200.99);
+        second.setPicturePath("the link 2");
 
         when(productServiceMock.getById(2)).thenReturn(Arrays.asList(second));
 
@@ -99,7 +111,11 @@ public class ProductRestControllerTest {
 
     @Test
     public void testEdit() throws Exception {
-        Product updated = new Product(1, "new_name1", 99.99, null, "the new link 1");
+        Product updated = new Product();
+        updated.setId(1);
+        updated.setName("new_name1");
+        updated.setPrice(99.99);
+        updated.setPicturePath("the new link 1");
 
         mockMvc.perform(put("/api/v1/product/1", updated)
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -107,13 +123,17 @@ public class ProductRestControllerTest {
         )
                 .andExpect(status().isOk());
 
-        verify(productServiceMock, times(1)).update(1, "new_name1", 99.99, null, "the new link 1");
+        verify(productServiceMock, times(1)).update(updated);
         verifyNoMoreInteractions(productServiceMock);
     }
 
     @Test
     public void testAdd() throws Exception {
-        Product new_product = new Product(1, "new_name", 9.99, null, "the new link");
+        Product new_product = new Product();
+        new_product.setId(1);
+        new_product.setName("new_name");
+        new_product.setPrice(9.99);
+        new_product.setPicturePath("the new link");
 
         mockMvc.perform(post("/api/v1/product")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -121,7 +141,7 @@ public class ProductRestControllerTest {
         )
                 .andExpect(status().isOk());
 
-        verify(productServiceMock, times(1)).add("new_name", 9.99, "the new link");
+        verify(productServiceMock, times(1)).add(new_product);
         verifyNoMoreInteractions(productServiceMock);
     }
 

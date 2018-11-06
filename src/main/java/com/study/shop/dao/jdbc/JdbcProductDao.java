@@ -38,7 +38,7 @@ public class JdbcProductDao implements ProductDao {
 
     @Override
     public List<Product> getById(int id) {
-        return jdbcTemplate.query(GET_PRODUCT_BY_ID_SQL, new Object[]{id}, new ProductRowMapper());
+        return jdbcTemplate.query(GET_PRODUCT_BY_ID_SQL, new ProductRowMapper(), id);
     }
 
     @Override
@@ -49,21 +49,21 @@ public class JdbcProductDao implements ProductDao {
             idList.add(key.toString());
         }
 
-        return jdbcTemplate.query(GET_PRODUCTS_BY_CART_SQL, new Object[]{idList.toString()}, new CartProductRowMapper());
+        return jdbcTemplate.query(GET_PRODUCTS_BY_CART_SQL, new CartProductRowMapper(), idList.toString());
     }
 
     @Override
     public void update(int id, String name, double price, LocalDateTime addTime, String picturePath) {
-        jdbcTemplate.update(UPDATE_PRODUCT_BY_ID_SQL, new Object[]{name, price, Timestamp.valueOf(addTime), picturePath, id});
+        jdbcTemplate.update(UPDATE_PRODUCT_BY_ID_SQL, name, price, Timestamp.valueOf(addTime), picturePath, id);
     }
 
     @Override
     public void delete(int id) {
-        jdbcTemplate.update(DELETE_PRODUCT_BY_ID_SQL, new Object[]{id});
+        jdbcTemplate.update(DELETE_PRODUCT_BY_ID_SQL, id);
     }
 
     @Override
     public void add(String name, double price, String picturePath) {
-        jdbcTemplate.update(INSERT_NEW_PRODUCT_SQL, new Object[]{name, price, picturePath});
+        jdbcTemplate.update(INSERT_NEW_PRODUCT_SQL, name, price, picturePath);
     }
 }

@@ -9,18 +9,6 @@ public class Product {
     private LocalDateTime addDate;
     private String picturePath;
 
-    public Product() {
-        super();
-    }
-
-    public Product(int id, String name, double price, LocalDateTime addDate, String picturePath) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.addDate = addDate;
-        this.picturePath = picturePath;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,8 +16,8 @@ public class Product {
 
         Product product = (Product) o;
 
-        return id == product.id && name != null && name.equals(product.name) && price == product.price &&
-                addDate.equals(product.addDate) && picturePath != null && picturePath.equals(product.picturePath);
+        return id == product.id && name != null && name.equals(product.name) && price == product.price && (addDate != null &&
+                addDate.equals(product.addDate) || addDate == product.addDate) && picturePath != null && picturePath.equals(product.picturePath);
     }
 
     @Override
